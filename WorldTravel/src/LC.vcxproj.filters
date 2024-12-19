@@ -1,0 +1,147 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="Farlods.cpp">
+      <Filter>patches</Filter>
+    </ClCompile>
+    <ClCompile Include="LevelSwitch.cpp">
+      <Filter>scripts</Filter>
+    </ClCompile>
+    <ClCompile Include="RestrictedAreas.cpp">
+      <Filter>scripts</Filter>
+    </ClCompile>
+    <ClCompile Include="Entrances.cpp">
+      <Filter>scripts</Filter>
+    </ClCompile>
+    <ClCompile Include="MpMap.cpp">
+      <Filter>helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerLocation.cpp">
+      <Filter>helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="HelpText.cpp">
+      <Filter>helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerObjects.cpp">
+      <Filter>helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="Minimap.cpp">
+      <Filter>scripts</Filter>
+    </ClCompile>
+    <ClCompile Include="Shops.cpp">
+      <Filter>scripts</Filter>
+    </ClCompile>
+    <ClCompile Include="Blips.cpp">
+      <Filter>helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="Respawn.cpp">
+      <Filter>scripts</Filter>
+    </ClCompile>
+    <ClCompile Include="RespawnBlock.cpp">
+      <Filter>scripts</Filter>
+    </ClCompile>
+    <ClCompile Include="RespawnBlockToggle.cpp">
+      <Filter>helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="PathNodeState.cpp">
+      <Filter>helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="Settings.cpp" />
+    <ClCompile Include="Hooking.cpp">
+      <Filter>hooking</Filter>
+    </ClCompile>
+    <ClCompile Include="Hooking.Patterns.cpp">
+      <Filter>hooking</Filter>
+    </ClCompile>
+    <ClCompile Include="IPL.cpp">
+      <Filter>helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="Scenario.cpp">
+      <Filter>helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="keyboard.cpp">
+      <Filter>helpers</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Farlods.h">
+      <Filter>patches</Filter>
+    </ClInclude>
+    <ClInclude Include="LevelSwitch.h">
+      <Filter>scripts</Filter>
+    </ClInclude>
+    <ClInclude Include="RestrictedAreas.h">
+      <Filter>scripts</Filter>
+    </ClInclude>
+    <ClInclude Include="Entrances.h">
+      <Filter>scripts</Filter>
+    </ClInclude>
+    <ClInclude Include="MpMap.h">
+      <Filter>helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerLocation.h">
+      <Filter>helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="HelpText.h">
+      <Filter>helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerObjects.h">
+      <Filter>helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="Minimap.h">
+      <Filter>scripts</Filter>
+    </ClInclude>
+    <ClInclude Include="Shops.h">
+      <Filter>scripts</Filter>
+    </ClInclude>
+    <ClInclude Include="Blips.h">
+      <Filter>helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="Respawn.h">
+      <Filter>scripts</Filter>
+    </ClInclude>
+    <ClInclude Include="RespawnBlock.h">
+      <Filter>scripts</Filter>
+    </ClInclude>
+    <ClInclude Include="RespawnBlockToggle.h">
+      <Filter>helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="PathNodeState.h">
+      <Filter>helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="Settings.h" />
+    <ClInclude Include="Hooking.h">
+      <Filter>hooking</Filter>
+    </ClInclude>
+    <ClInclude Include="Hooking.Patterns.h">
+      <Filter>hooking</Filter>
+    </ClInclude>
+    <ClInclude Include="IPL.h">
+      <Filter>helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="Scenario.h">
+      <Filter>helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="Hashing.h">
+      <Filter>helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="keyboard.h">
+      <Filter>helpers</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="patches">
+      <UniqueIdentifier>{cdf43ec4-d752-45f2-889f-c57c7bdeaadc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="scripts">
+      <UniqueIdentifier>{967482df-324a-489a-9506-d6f3ec530595}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="hooking">
+      <UniqueIdentifier>{a795a633-84e4-482f-bc64-0c5ddd44e791}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="helpers">
+      <UniqueIdentifier>{f1a6e786-9386-4c18-bed1-5e44a8c2cc2e}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
