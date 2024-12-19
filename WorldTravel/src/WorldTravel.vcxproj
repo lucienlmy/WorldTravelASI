@@ -14,7 +14,7 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{B57A545A-0546-4510-A46D-CD13391AAF33}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>LC</RootNamespace>
+    <RootNamespace>WorldTravel</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ProjectName>WorldTravel</ProjectName>
   </PropertyGroup>
