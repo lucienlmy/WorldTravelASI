@@ -52,8 +52,8 @@ DWORD WINAPI Main()
 
 	RockstarEditor::Patch();
 	spdlog::info("Patched Rockstar Editor.");
-	CWeaponInfo::PatchWeapons();
-	spdlog::info("Patched Weapon Limits.");
+	//CWeaponInfo::PatchWeapons();
+	//spdlog::info("Patched Weapon Limits.");
 	patches::water::Init();
 	spdlog::info("Patched Water.");
 

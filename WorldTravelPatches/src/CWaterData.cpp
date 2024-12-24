@@ -53,7 +53,7 @@ void CWaterData::switchWater(eWaterArea waterArea)
             *CWaterData::bd_min_y = Settings::LibertyCityMinY;
             *CWaterData::bd_max_y = Settings::LibertyCityMaxY;
 
-            CWaterTune::load("common:/data/watertune_HeistIsland.xml");
+            CWaterTune::load("common:/data/watertune_libertycity.xml");
             CWaterTune::loadWaterFog();
             CWaterData::unload();
             CWaterData::load("update:/common/data/levels/gta5/water_libertycity.xml");

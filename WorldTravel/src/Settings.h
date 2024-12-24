@@ -9,6 +9,7 @@ public:
     static int TeleportKey;
     static bool EnableCayoPerico;
     static bool EnableNorthYankton;
+	static bool EnableLibertyCityLODLights;
 
     static void Load();
 

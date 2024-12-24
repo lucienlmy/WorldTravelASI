@@ -33,6 +33,7 @@ namespace levelSwitch
 	std::vector<std::string> libertyIpls;
 	std::vector<std::string> libertySpIpls;
 	std::vector<std::string> libertyMpIpls;
+	std::vector<std::string> libertyLODLightIpls;
 	std::vector<std::string> libertyPeds;
 	std::vector<std::string> libertyVehicles;
 	std::vector<std::string> libertyRadio;
@@ -239,6 +240,7 @@ namespace levelSwitch
 			{"IPLs", &libertyIpls},
 			{"IPLsSP", &libertySpIpls},
 			{"IPLsMP", &libertyMpIpls},
+			{"IPLsLODLights", &libertyLODLightIpls},
 			{"ZonedPeds", &libertyPeds},
 			{"ZonedVehicles", &libertyVehicles},
 			{"ZonedRadioStations", &libertyRadio}
@@ -265,7 +267,7 @@ namespace levelSwitch
 		}
 	}
 
-
+	// Initialize Liberty City
 	void initialize()
 	{
 		readLSFiles();
@@ -436,7 +438,7 @@ namespace levelSwitch
 		}
 	}
 
-
+	// Fix to force disable IPLs in MP
 	void KeepLosSantosIplsDisabled()
 	{
 		if (!worldtravel::IsLosSantos())
@@ -477,7 +479,8 @@ namespace levelSwitch
 		NETWORK::NETWORK_OVERRIDE_CLOCK_TIME(hours, minutes, seconds);
 	}
 
-	void CayoPericoHeistInterorFix()
+	// Fix for Cayo Perico Heist Interiors in MP
+	void CayoPericoHeistInteriorFix()
 	{
 		if (worldtravel::IsLosSantos())
 		{
@@ -506,6 +509,7 @@ namespace levelSwitch
 		}
 	}
 
+	// Fix for interiors being flooded
 	void InteriorWaterFix()
 	{
 		int playerInteriorId = INTERIOR::GET_INTERIOR_FROM_ENTITY(player);
@@ -538,7 +542,7 @@ namespace levelSwitch
 	}
 
 
-
+	// handles blip visibility for all maps
 	void BlipVisibilityController()
 	{
 		Entity player = playerPed;
@@ -784,7 +788,7 @@ namespace levelSwitch
 
 
 
-
+	// Blocks NPCs from spawning in unloaded areas
 	void NpcSpawnBlocker()
 	{
 		//block traffic and peds around Los Santos if it is not loaded
@@ -858,7 +862,6 @@ namespace levelSwitch
 			index++;
 		}
 	}
-
 
 	void enableScenarios(const std::vector<std::string>& scenarioList)
 	{
@@ -978,6 +981,7 @@ namespace levelSwitch
 	////             Loading Helper Functions            ////
 	/////////////////////////////////////////////////////////
 
+	// Load the Cayo Perico Island
 	void loadCayo()
 	{
 		/*if (!worldtravel::MpMap::IsMPMapActive())
@@ -1013,6 +1017,7 @@ namespace levelSwitch
 		SetBlipsLocation(3);
 	}
 
+	// Load Liberty City
 	void loadLiberty()
 	{
 		STREAMING::SET_ISLAND_ENABLED(const_cast<char*>("LibertyCity"), true);
@@ -1025,6 +1030,10 @@ namespace levelSwitch
 		else
 		{
 			requestIpls(libertySpIpls);
+		}
+		if (Settings::EnableLibertyCityLODLights)
+		{
+			requestIpls(libertyLODLightIpls);
 		}
 
 		loadMapLiberty(libertyScenarios, libertyZones, libertyAmbientZones, libertyPeds, libertyVehicles, libertyRadio, { 12, 13, 14, 16, 17, 18 });
@@ -1041,6 +1050,7 @@ namespace levelSwitch
 		SetBlipsLocation(1);
 	}
 
+	// Load Los Santos
 	void loadSantos()
 	{
 		patches::farlods::SetVisible(true);
@@ -1088,6 +1098,7 @@ namespace levelSwitch
 
 		if (!NETWORK::NETWORK_IS_IN_SESSION())
 		{
+			// enable the following scripts in singleplayer that we disabled when not in LS
 			RequestScript("blip_controller", 1424);        // responsible for blips
 			RequestScript("forsalesigns", 1424);           // responsible for property for sale signs
 			RequestScript("respawn_controller", 1424);     // responsible for respawning the player
@@ -1096,6 +1107,7 @@ namespace levelSwitch
 		}
 	}
 
+	// Load North Yankton
 	void loadYankton()
 	{
 		requestIpls(yanktonIpls);
@@ -1244,6 +1256,7 @@ namespace levelSwitch
 	////           Unloading Helper Functions            ////
 	/////////////////////////////////////////////////////////
 
+	// Unload the Cayo Perico Island
 	void unloadCayo()
 	{
 		removeIpls(cayoMpIpls);
@@ -1274,6 +1287,7 @@ namespace levelSwitch
 		UI::SET_USE_ISLAND_MAP(false);
 	}
 
+	// Unload Liberty City
 	void unloadLiberty()
 	{
 		STREAMING::SET_ISLAND_ENABLED(const_cast<char*>("LibertyCity"), false);
@@ -1289,6 +1303,7 @@ namespace levelSwitch
 		unloadMapLiberty(libertyScenarios, libertyZones, libertyAmbientZones, libertyPeds, libertyVehicles, libertyRadio, { 12, 13, 14, 16, 17, 18 });
 	}
 
+	// Unload Los Santos
 	void unloadSantos()
 	{
 		patches::farlods::SetVisible(false);
@@ -1301,6 +1316,11 @@ namespace levelSwitch
 			removeIpls(santosSpIpls, santosSpIplState);
 
 		unloadMapSantos(santosScenarios, santosZones, santosAmbientZones, santosPeds, santosVehicles, santosRadio, { 0, 3 }, santosScenariosState, santosAmbientZonesState);
+
+		if (Settings::EnableLibertyCityLODLights)
+		{
+			removeIpls(libertyLODLightIpls);
+		}
 
 		// if in singleplayer
 		if (!NETWORK::NETWORK_IS_IN_SESSION())
@@ -1316,6 +1336,7 @@ namespace levelSwitch
 
 		if (!NETWORK::NETWORK_IS_IN_SESSION())
 		{
+			// disable the following scripts in singleplayer to remove blips and respawn points when not in LS
 			GAMEPLAY::TERMINATE_ALL_SCRIPTS_WITH_THIS_NAME((char*)"blip_controller");          // responsible for blips
 			GAMEPLAY::TERMINATE_ALL_SCRIPTS_WITH_THIS_NAME((char*)"forsalesigns");			   // responsible for property for sale signs
 			GAMEPLAY::TERMINATE_ALL_SCRIPTS_WITH_THIS_NAME((char*)"respawn_controller");	   // responsible for respawning the player
@@ -1324,6 +1345,7 @@ namespace levelSwitch
 		}
 	}
 
+	// Unload North Yankton
 	void unloadYankton()
 	{
 		removeIpls(yanktonIpls);
@@ -1342,8 +1364,9 @@ namespace levelSwitch
 		}
 		GAMEPLAY::CLEAR_OVERRIDE_WEATHER();
 	}
-		
-	void FlightControllerLS()
+
+	// used to handle manual flight between maps
+	void FlightController()
 	{
 		Entity player = playerPed;
 
@@ -1354,252 +1377,217 @@ namespace levelSwitch
 		float playerVelocityX = playerVelocity.x;
 		float playerVelocityY = playerVelocity.y;
 		float playerVelocityZ = playerVelocity.z;
-
-		if (ENTITY::IS_ENTITY_AT_COORD(player, FlyToLCFromLSCoords[0], FlyToLCFromLSCoords[1], playerAltitude, 1500.0f, 1500.0f, 1500.0f, 0, 1, 0))
+		if (worldtravel::IsLosSantos())
 		{
-			CAM::DO_SCREEN_FADE_OUT(800);
-			WAIT(800);
-			worldtravel::SetPlayerLocationID(-1);
-			loadLiberty();
-			ENTITY::SET_ENTITY_COORDS_NO_OFFSET(player, FlyToLSFromLCCoords[0] + 1500.00f, FlyToLSFromLCCoords[1] + 1500.00f, playerAltitude, 0, 0, 1);
-			ENTITY::SET_ENTITY_HEADING(player, 300.0f);
-			CAM::SET_GAMEPLAY_CAM_RELATIVE_HEADING(0.0f);
-			CAM::SET_GAMEPLAY_CAM_RELATIVE_PITCH(0.0f, 0.0f);
-			ENTITY::SET_ENTITY_VELOCITY(player, playerVelocityX, playerVelocityY, playerVelocityZ);
-			if (!NETWORK::NETWORK_IS_IN_SESSION())
+			if (ENTITY::IS_ENTITY_AT_COORD(player, FlyToLCFromLSCoords[0], FlyToLCFromLSCoords[1], playerAltitude, 1500.0f, 1500.0f, 1500.0f, 0, 1, 0))
 			{
-				TIME::ADD_TO_CLOCK_TIME(9, 0, 0);
-			}
-			else
-			{
-				NetworkClockController(true);
-			}
-			unloadSantos();
-			worldtravel::SetPlayerLocationID(1);
-			CAM::DO_SCREEN_FADE_IN(800);
-		}
-
-		if (ENTITY::IS_ENTITY_AT_COORD(player, FlyToCPFromLSCoords[0], FlyToCPFromLSCoords[1], playerAltitude, 1500.0f, 1500.0f, 1500.0f, 0, 1, 0) &&
-			!NETWORK::NETWORK_IS_IN_SESSION())
-		{
-			CAM::DO_SCREEN_FADE_OUT(800);
-			WAIT(800);
-			worldtravel::SetPlayerLocationID(-1);
-			loadCayo();
-
-			if (!NETWORK::NETWORK_IS_IN_SESSION())
-			{
-				ENTITY::SET_ENTITY_COORDS_NO_OFFSET(player, FlyToLSFromCPCoords[0] + 1500.00f, FlyToLSFromCPCoords[1] - 1500.00f, playerAltitude, 0, 0, 1);
-			}
-			else
-			{
-				if (playerAltitude < 400.0f)
+				CAM::DO_SCREEN_FADE_OUT(800);
+				WAIT(800);
+				worldtravel::SetPlayerLocationID(-1);
+				loadLiberty();
+				ENTITY::SET_ENTITY_COORDS_NO_OFFSET(player, FlyToLSFromLCCoords[0] + 1500.00f, FlyToLSFromLCCoords[1] + 1500.00f, playerAltitude, 0, 0, 1);
+				ENTITY::SET_ENTITY_HEADING(player, 300.0f);
+				CAM::SET_GAMEPLAY_CAM_RELATIVE_HEADING(0.0f);
+				CAM::SET_GAMEPLAY_CAM_RELATIVE_PITCH(0.0f, 0.0f);
+				ENTITY::SET_ENTITY_VELOCITY(player, playerVelocityX, playerVelocityY, playerVelocityZ);
+				if (!NETWORK::NETWORK_IS_IN_SESSION())
 				{
-					ENTITY::SET_ENTITY_COORDS_NO_OFFSET(player, FlyToCPFromLSCoordsMP[0], FlyToCPFromLSCoordsMP[1], 200.0f, 0, 0, 1);
+					TIME::ADD_TO_CLOCK_TIME(9, 0, 0);
 				}
 				else
 				{
-					ENTITY::SET_ENTITY_COORDS_NO_OFFSET(player, FlyToCPFromLSCoordsMP[0], FlyToCPFromLSCoordsMP[1], playerAltitude, 0, 0, 1);
+					NetworkClockController(true);
 				}
+				unloadSantos();
+				worldtravel::SetPlayerLocationID(1);
+				CAM::DO_SCREEN_FADE_IN(800);
 			}
-			ENTITY::SET_ENTITY_HEADING(player, 240.0f);
-			CAM::SET_GAMEPLAY_CAM_RELATIVE_HEADING(0.0f);
-			CAM::SET_GAMEPLAY_CAM_RELATIVE_PITCH(0.0f, 0.0f);
-			ENTITY::SET_ENTITY_VELOCITY(player, playerVelocityX, playerVelocityY, playerVelocityZ);
-			if (!NETWORK::NETWORK_IS_IN_SESSION())
+
+			if (ENTITY::IS_ENTITY_AT_COORD(player, FlyToCPFromLSCoords[0], FlyToCPFromLSCoords[1], playerAltitude, 1500.0f, 1500.0f, 1500.0f, 0, 1, 0) &&
+				!NETWORK::NETWORK_IS_IN_SESSION())
 			{
-				TIME::ADD_TO_CLOCK_TIME(14, 0, 0);
-			}
-			else
-			{
-				NetworkClockController(true);
-			}
-			unloadSantos();
-			worldtravel::SetPlayerLocationID(3);
-			CAM::DO_SCREEN_FADE_IN(800);
-		}
-	}
+				CAM::DO_SCREEN_FADE_OUT(800);
+				WAIT(800);
+				worldtravel::SetPlayerLocationID(-1);
+				loadCayo();
 
-	void FlightControllerLC()
-	{
-		Entity player = playerPed;
-
-		if (PED::IS_PED_IN_ANY_VEHICLE(player, 0))
-			player = PED::GET_VEHICLE_PED_IS_USING(player);
-		float playerAltitude = ENTITY::GET_ENTITY_HEIGHT_ABOVE_GROUND(player);
-		Vector3 playerVelocity = ENTITY::GET_ENTITY_VELOCITY(player);
-		float playerVelocityX = playerVelocity.x;
-		float playerVelocityY = playerVelocity.y;
-		float playerVelocityZ = playerVelocity.z;
-
-		if (ENTITY::IS_ENTITY_AT_COORD(player, FlyToLSFromLCCoords[0], FlyToLSFromLCCoords[1], playerAltitude, 1500.0f, 1500.0f, 1500.0f, 0, 1, 0))
-		{
-
-			CAM::DO_SCREEN_FADE_OUT(800);
-			WAIT(800);
-			worldtravel::SetPlayerLocationID(-1);
-			loadSantos();
-			ENTITY::SET_ENTITY_COORDS_NO_OFFSET(player, FlyToLCFromLSCoords[0] - 1500.00f, FlyToLCFromLSCoords[1] - 1500.00f, playerAltitude, 0, 0, 1);
-			ENTITY::SET_ENTITY_HEADING(player, 130.0f);
-			CAM::SET_GAMEPLAY_CAM_RELATIVE_HEADING(0.0f);
-			CAM::SET_GAMEPLAY_CAM_RELATIVE_PITCH(0.0f, 0.0f);
-			ENTITY::SET_ENTITY_VELOCITY(player, playerVelocityX, playerVelocityY, playerVelocityZ);
-			if (!NETWORK::NETWORK_IS_IN_SESSION())
-			{
-				TIME::ADD_TO_CLOCK_TIME(3, 0, 0);
-			}
-			else
-			{
-				NetworkClockController(false);
-				NETWORK::NETWORK_CLEAR_CLOCK_TIME_OVERRIDE();
-			}
-			unloadLiberty();
-			worldtravel::SetPlayerLocationID(0);
-			CAM::DO_SCREEN_FADE_IN(800);
-
-		}
-
-		if (ENTITY::IS_ENTITY_AT_COORD(player, FlyToCPFromLCCoords[0], FlyToCPFromLCCoords[1], playerAltitude, 1500.0f, 1500.0f, 1500.0f, 0, 1, 0) &&
-			!NETWORK::NETWORK_IS_IN_SESSION())
-		{
-
-			CAM::DO_SCREEN_FADE_OUT(800);
-			WAIT(800);
-			worldtravel::SetPlayerLocationID(-1);
-			unloadLiberty();
-			if (!NETWORK::NETWORK_IS_IN_SESSION())
-			{
-				ENTITY::SET_ENTITY_COORDS_NO_OFFSET(player, FlyToLCFromCPCoords[0] + 1500.00f, FlyToLCFromCPCoords[1] - 1500.00f, playerAltitude, 0, 0, 1);
-			}
-			else
-			{
-				if (playerAltitude < 400.0f)
+				if (!NETWORK::NETWORK_IS_IN_SESSION())
 				{
-					ENTITY::SET_ENTITY_COORDS_NO_OFFSET(player, FlyToCPFromLCCoordsMP[0], FlyToCPFromLCCoordsMP[1], 200.0f, 0, 0, 1);
+					ENTITY::SET_ENTITY_COORDS_NO_OFFSET(player, FlyToLSFromCPCoords[0] + 1500.00f, FlyToLSFromCPCoords[1] - 1500.00f, playerAltitude, 0, 0, 1);
 				}
 				else
 				{
-					ENTITY::SET_ENTITY_COORDS_NO_OFFSET(player, FlyToCPFromLCCoordsMP[0], FlyToCPFromLCCoordsMP[1], playerAltitude, 0, 0, 1);
+					if (playerAltitude < 400.0f)
+					{
+						ENTITY::SET_ENTITY_COORDS_NO_OFFSET(player, FlyToCPFromLSCoordsMP[0], FlyToCPFromLSCoordsMP[1], 200.0f, 0, 0, 1);
+					}
+					else
+					{
+						ENTITY::SET_ENTITY_COORDS_NO_OFFSET(player, FlyToCPFromLSCoordsMP[0], FlyToCPFromLSCoordsMP[1], playerAltitude, 0, 0, 1);
+					}
 				}
+				ENTITY::SET_ENTITY_HEADING(player, 240.0f);
+				CAM::SET_GAMEPLAY_CAM_RELATIVE_HEADING(0.0f);
+				CAM::SET_GAMEPLAY_CAM_RELATIVE_PITCH(0.0f, 0.0f);
+				ENTITY::SET_ENTITY_VELOCITY(player, playerVelocityX, playerVelocityY, playerVelocityZ);
+				if (!NETWORK::NETWORK_IS_IN_SESSION())
+				{
+					TIME::ADD_TO_CLOCK_TIME(14, 0, 0);
+				}
+				else
+				{
+					NetworkClockController(true);
+				}
+				unloadSantos();
+				worldtravel::SetPlayerLocationID(3);
+				CAM::DO_SCREEN_FADE_IN(800);
 			}
-			ENTITY::SET_ENTITY_HEADING(player, 220.0f);
-			CAM::SET_GAMEPLAY_CAM_RELATIVE_HEADING(0.0f);
-			CAM::SET_GAMEPLAY_CAM_RELATIVE_PITCH(0.0f, 0.0f);
-			ENTITY::SET_ENTITY_VELOCITY(player, playerVelocityX, playerVelocityY, playerVelocityZ);
+		}
+		else if (worldtravel::IsLibertyCity())
+		{
+			if (ENTITY::IS_ENTITY_AT_COORD(player, FlyToLSFromLCCoords[0], FlyToLSFromLCCoords[1], playerAltitude, 1500.0f, 1500.0f, 1500.0f, 0, 1, 0))
+			{
+
+				CAM::DO_SCREEN_FADE_OUT(800);
+				WAIT(800);
+				worldtravel::SetPlayerLocationID(-1);
+				loadSantos();
+				ENTITY::SET_ENTITY_COORDS_NO_OFFSET(player, FlyToLCFromLSCoords[0] - 1500.00f, FlyToLCFromLSCoords[1] - 1500.00f, playerAltitude, 0, 0, 1);
+				ENTITY::SET_ENTITY_HEADING(player, 130.0f);
+				CAM::SET_GAMEPLAY_CAM_RELATIVE_HEADING(0.0f);
+				CAM::SET_GAMEPLAY_CAM_RELATIVE_PITCH(0.0f, 0.0f);
+				ENTITY::SET_ENTITY_VELOCITY(player, playerVelocityX, playerVelocityY, playerVelocityZ);
+				if (!NETWORK::NETWORK_IS_IN_SESSION())
+				{
+					TIME::ADD_TO_CLOCK_TIME(3, 0, 0);
+				}
+				else
+				{
+					NetworkClockController(false);
+					NETWORK::NETWORK_CLEAR_CLOCK_TIME_OVERRIDE();
+				}
+				unloadLiberty();
+				worldtravel::SetPlayerLocationID(0);
+				CAM::DO_SCREEN_FADE_IN(800);
+
+			}
+
+			if (ENTITY::IS_ENTITY_AT_COORD(player, FlyToCPFromLCCoords[0], FlyToCPFromLCCoords[1], playerAltitude, 1500.0f, 1500.0f, 1500.0f, 0, 1, 0) &&
+				!NETWORK::NETWORK_IS_IN_SESSION())
+			{
+
+				CAM::DO_SCREEN_FADE_OUT(800);
+				WAIT(800);
+				worldtravel::SetPlayerLocationID(-1);
+				unloadLiberty();
+				if (!NETWORK::NETWORK_IS_IN_SESSION())
+				{
+					ENTITY::SET_ENTITY_COORDS_NO_OFFSET(player, FlyToLCFromCPCoords[0] + 1500.00f, FlyToLCFromCPCoords[1] - 1500.00f, playerAltitude, 0, 0, 1);
+				}
+				else
+				{
+					if (playerAltitude < 400.0f)
+					{
+						ENTITY::SET_ENTITY_COORDS_NO_OFFSET(player, FlyToCPFromLCCoordsMP[0], FlyToCPFromLCCoordsMP[1], 200.0f, 0, 0, 1);
+					}
+					else
+					{
+						ENTITY::SET_ENTITY_COORDS_NO_OFFSET(player, FlyToCPFromLCCoordsMP[0], FlyToCPFromLCCoordsMP[1], playerAltitude, 0, 0, 1);
+					}
+				}
+				ENTITY::SET_ENTITY_HEADING(player, 220.0f);
+				CAM::SET_GAMEPLAY_CAM_RELATIVE_HEADING(0.0f);
+				CAM::SET_GAMEPLAY_CAM_RELATIVE_PITCH(0.0f, 0.0f);
+				ENTITY::SET_ENTITY_VELOCITY(player, playerVelocityX, playerVelocityY, playerVelocityZ);
+				if (!NETWORK::NETWORK_IS_IN_SESSION())
+				{
+					TIME::ADD_TO_CLOCK_TIME(6, 0, 0);
+				}
+				loadCayo();
+				worldtravel::SetPlayerLocationID(3);
+				CAM::DO_SCREEN_FADE_IN(800);
+
+			}
+		}
+		else if (worldtravel::IsCayoPerico())
+		{
+			int destination = -1;
 			if (!NETWORK::NETWORK_IS_IN_SESSION())
 			{
-				TIME::ADD_TO_CLOCK_TIME(6, 0, 0);
-			}
-			loadCayo();
-			worldtravel::SetPlayerLocationID(3);
-			CAM::DO_SCREEN_FADE_IN(800);
-
-		}
-	}
-
-	void FlightControllerCP()
-	{
-		Entity player = playerPed;
-
-		if (PED::IS_PED_IN_ANY_VEHICLE(player, 0))
-			player = PED::GET_VEHICLE_PED_IS_USING(player);
-		float playerAltitude = ENTITY::GET_ENTITY_HEIGHT_ABOVE_GROUND(player);
-		Vector3 playerVelocity = ENTITY::GET_ENTITY_VELOCITY(player);
-		float playerVelocityX = playerVelocity.x;
-		float playerVelocityY = playerVelocity.y;
-		float playerVelocityZ = playerVelocity.z;
-		int destination = -1;
-
-		if (!NETWORK::NETWORK_IS_IN_SESSION())
-		{
-			if (ENTITY::IS_ENTITY_AT_COORD(player, FlyToLSFromCPCoords[0], FlyToLSFromCPCoords[1], playerAltitude, 1500.0f, 1500.0f, 1500.0f, 0, 1, 0))
-			{
-				destination = 0;
-			}
-
-			if (ENTITY::IS_ENTITY_AT_COORD(player, FlyToLCFromCPCoords[0], FlyToLCFromCPCoords[1], playerAltitude, 1500.0f, 1500.0f, 1500.0f, 0, 1, 0))
-			{
-				destination = 1;
-			}
-		}
-		else
-		{
-			if (!ENTITY::IS_ENTITY_DEAD(playerPed) &&
-				!ENTITY::IS_ENTITY_IN_AREA(playerPed, CayoPericoWestBound, CayoPericoEastBound, -10000.0f, CayoPericoSouthBound, CayoPericoNorthBound, 10000.0f, false, false, false))
-			{
-				float playerHeading = ENTITY::GET_ENTITY_HEADING(player);
-				if ((playerHeading >= CayoPericoMPDestHeading) && playerHeading <= 180.0f + CayoPericoMPDestHeading)
+				if (ENTITY::IS_ENTITY_AT_COORD(player, FlyToLSFromCPCoords[0], FlyToLSFromCPCoords[1], playerAltitude, 1500.0f, 1500.0f, 1500.0f, 0, 1, 0))
 				{
 					destination = 0;
 				}
-				else
+
+				if (ENTITY::IS_ENTITY_AT_COORD(player, FlyToLCFromCPCoords[0], FlyToLCFromCPCoords[1], playerAltitude, 1500.0f, 1500.0f, 1500.0f, 0, 1, 0))
 				{
 					destination = 1;
 				}
 			}
-		}
-
-		if (destination == 0)
-		{
-			CAM::DO_SCREEN_FADE_OUT(800);
-			WAIT(800);
-			worldtravel::SetPlayerLocationID(-1);
-			unloadCayo();
-			ENTITY::SET_ENTITY_COORDS_NO_OFFSET(player, FlyToCPFromLSCoords[0] - 1500.00f, FlyToCPFromLSCoords[1] + 1500.00f, playerAltitude, 0, 0, 1);
-			ENTITY::SET_ENTITY_HEADING(player, 45.0f);
-			CAM::SET_GAMEPLAY_CAM_RELATIVE_HEADING(0.0f);
-			CAM::SET_GAMEPLAY_CAM_RELATIVE_PITCH(0.0f, 0.0f);
-			ENTITY::SET_ENTITY_VELOCITY(player, playerVelocityX, playerVelocityY, playerVelocityZ);
-			if (!NETWORK::NETWORK_IS_IN_SESSION())
-			{
-				TIME::ADD_TO_CLOCK_TIME(6, 0, 0);
-			}
 			else
 			{
-				NetworkClockController(false);
-				NETWORK::NETWORK_CLEAR_CLOCK_TIME_OVERRIDE();
+				if (!ENTITY::IS_ENTITY_DEAD(playerPed) &&
+					!ENTITY::IS_ENTITY_IN_AREA(playerPed, CayoPericoWestBound, CayoPericoEastBound, -10000.0f, CayoPericoSouthBound, CayoPericoNorthBound, 10000.0f, false, false, false))
+				{
+					float playerHeading = ENTITY::GET_ENTITY_HEADING(player);
+					if ((playerHeading >= CayoPericoMPDestHeading) && playerHeading <= 180.0f + CayoPericoMPDestHeading)
+					{
+						destination = 0;
+					}
+					else
+					{
+						destination = 1;
+					}
+				}
 			}
-			loadSantos();
-			worldtravel::SetPlayerLocationID(0);
-			CAM::DO_SCREEN_FADE_IN(800);
-		}
-		else if (destination == 1)
-		{
-			CAM::DO_SCREEN_FADE_OUT(800);
-			WAIT(800);
-			worldtravel::SetPlayerLocationID(-1);
-			unloadCayo();
-			ENTITY::SET_ENTITY_COORDS_NO_OFFSET(player, FlyToCPFromLCCoords[0] - 1500.00f, FlyToCPFromLCCoords[1] + 1500.00f, playerAltitude, 0, 0, 1);
-			ENTITY::SET_ENTITY_HEADING(player, 10.0f);
-			CAM::SET_GAMEPLAY_CAM_RELATIVE_HEADING(0.0f);
-			CAM::SET_GAMEPLAY_CAM_RELATIVE_PITCH(0.0f, 0.0f);
-			ENTITY::SET_ENTITY_VELOCITY(player, playerVelocityX, playerVelocityY, playerVelocityZ);
-			if (!NETWORK::NETWORK_IS_IN_SESSION())
+
+			if (destination == 0)
 			{
-				TIME::ADD_TO_CLOCK_TIME(4, 0, 0);
+				CAM::DO_SCREEN_FADE_OUT(800);
+				WAIT(800);
+				worldtravel::SetPlayerLocationID(-1);
+				unloadCayo();
+				ENTITY::SET_ENTITY_COORDS_NO_OFFSET(player, FlyToCPFromLSCoords[0] - 1500.00f, FlyToCPFromLSCoords[1] + 1500.00f, playerAltitude, 0, 0, 1);
+				ENTITY::SET_ENTITY_HEADING(player, 45.0f);
+				CAM::SET_GAMEPLAY_CAM_RELATIVE_HEADING(0.0f);
+				CAM::SET_GAMEPLAY_CAM_RELATIVE_PITCH(0.0f, 0.0f);
+				ENTITY::SET_ENTITY_VELOCITY(player, playerVelocityX, playerVelocityY, playerVelocityZ);
+				if (!NETWORK::NETWORK_IS_IN_SESSION())
+				{
+					TIME::ADD_TO_CLOCK_TIME(6, 0, 0);
+				}
+				else
+				{
+					NetworkClockController(false);
+					NETWORK::NETWORK_CLEAR_CLOCK_TIME_OVERRIDE();
+				}
+				loadSantos();
+				worldtravel::SetPlayerLocationID(0);
+				CAM::DO_SCREEN_FADE_IN(800);
 			}
-			loadLiberty();
-			worldtravel::SetPlayerLocationID(1);
-			CAM::DO_SCREEN_FADE_IN(800);
+			else if (destination == 1)
+			{
+				CAM::DO_SCREEN_FADE_OUT(800);
+				WAIT(800);
+				worldtravel::SetPlayerLocationID(-1);
+				unloadCayo();
+				ENTITY::SET_ENTITY_COORDS_NO_OFFSET(player, FlyToCPFromLCCoords[0] - 1500.00f, FlyToCPFromLCCoords[1] + 1500.00f, playerAltitude, 0, 0, 1);
+				ENTITY::SET_ENTITY_HEADING(player, 10.0f);
+				CAM::SET_GAMEPLAY_CAM_RELATIVE_HEADING(0.0f);
+				CAM::SET_GAMEPLAY_CAM_RELATIVE_PITCH(0.0f, 0.0f);
+				ENTITY::SET_ENTITY_VELOCITY(player, playerVelocityX, playerVelocityY, playerVelocityZ);
+				if (!NETWORK::NETWORK_IS_IN_SESSION())
+				{
+					TIME::ADD_TO_CLOCK_TIME(4, 0, 0);
+				}
+				loadLiberty();
+				worldtravel::SetPlayerLocationID(1);
+				CAM::DO_SCREEN_FADE_IN(800);
+			}
 		}
 	}
 
-	void FlightController()
-	{
-		if (worldtravel::IsLosSantos())
-		{
-			FlightControllerLS();
-		}
-		else if (worldtravel::IsLibertyCity())
-		{
-			FlightControllerLC();
-		}
-		else if (worldtravel::IsCayoPerico())
-		{
-			FlightControllerCP();
-		}
-	}
-
+	// Airport Travel from Los Santos
 	void AirportTravelLS()
 	{
 		if (!ENTITY::IS_ENTITY_DEAD(playerPed) && ENTITY::IS_ENTITY_AT_COORD(playerPed, LosSantosIntAirport[0], LosSantosIntAirport[1], LosSantosIntAirport[2], 150.0f, 150.0f, 150.0f, 0, 1, 0) && !PED::IS_PED_IN_ANY_VEHICLE(player, 0))
@@ -1720,6 +1708,7 @@ namespace levelSwitch
 		}
 	}
 
+	// Airport Travel from Liberty City
 	void AirportTravelLC()
 	{
 		if (!ENTITY::IS_ENTITY_DEAD(playerPed) && ENTITY::IS_ENTITY_AT_COORD(playerPed, FrancisIntAirport[0], FrancisIntAirport[1], FrancisIntAirport[2], 150.0f, 150.0f, 150.0f, 0, 1, 0) && !PED::IS_PED_IN_ANY_VEHICLE(player, 0))
@@ -1844,6 +1833,7 @@ namespace levelSwitch
 		}
 	}
 
+	// Airport Travel from North Yankton
 	void AirportTravelNY()
 	{
 		if (!ENTITY::IS_ENTITY_DEAD(playerPed) &&
@@ -1992,6 +1982,7 @@ namespace levelSwitch
 		}
 	}
 
+	// Handles the docks travel system from Los Santos to Liberty City
 	void DocksTravel()
 	{
 		Entity player = playerPed;
@@ -2111,6 +2102,8 @@ namespace levelSwitch
 		}
 	}
 
+
+	// Handles Fast Travelling
 	void TeleportPlayer(Entity& player, float x, float y, float z, float heading)
 	{
 		if (PED::IS_PED_IN_ANY_VEHICLE(player, 0))
@@ -2323,6 +2316,7 @@ namespace levelSwitch
 		}
 	}
 
+	// handle map swapping when switching between characters
 	void CharacterSwitchLoadLC()
 	{
 		int currentLocation = worldtravel::GetPlayerLocationID();
@@ -2361,7 +2355,7 @@ namespace levelSwitch
 
 	void RunTick()
 	{
-		CayoPericoHeistInterorFix();
+		CayoPericoHeistInteriorFix();
 		worldtravel::MpMap::CheckIfMPMapIsActive();
 		AirportTravel();
 		DocksTravel();
