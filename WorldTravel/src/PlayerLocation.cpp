@@ -13,6 +13,11 @@ namespace worldtravel
 		return playerLocationID;
 	}
 
+	bool IsSwitchingMaps()
+	{
+		return playerLocationID == -1;
+	}
+
 	bool IsLosSantos()
 	{
 		return playerLocationID == 0;

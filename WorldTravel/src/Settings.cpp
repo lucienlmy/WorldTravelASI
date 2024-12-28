@@ -6,6 +6,7 @@ int Settings::TeleportKey = VK_F11;
 bool Settings::EnableCayoPerico = true;
 bool Settings::EnableNorthYankton = true;
 bool Settings::EnableLibertyCityLODLights = true;
+bool Settings::EnableLCOnStartup = true;
 
 void Settings::Load()
 {
@@ -18,6 +19,7 @@ void Settings::Load()
     EnableCayoPerico = LoadBoolSetting("WorldTravel", "EnableCayoPerico", true, iniFilePath);
     EnableNorthYankton = LoadBoolSetting("WorldTravel", "EnableNorthYankton", true, iniFilePath);
 	EnableLibertyCityLODLights = LoadBoolSetting("WorldTravel", "EnableLibertyCityLODLights", true, iniFilePath);
+	EnableLCOnStartup = LoadBoolSetting("WorldTravel", "EnableLCOnStartup", false, iniFilePath);
 }
 
 // Settings helper functions

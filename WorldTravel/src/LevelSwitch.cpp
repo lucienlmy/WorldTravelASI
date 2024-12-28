@@ -60,6 +60,26 @@ namespace levelSwitch
 												"h4_islandx_mansion_lockup_01",
 												"h4_islandx_mansion_office",
 												"h4_mph4_airstrip_interior_0_airstrip_hanger" };
+	std::vector<std::string> cayoInstancePlacement = { "h4_mph4_terrain_01_grass_0",
+														"h4_mph4_terrain_01_grass_1",
+														"h4_mph4_terrain_02_grass_0",
+														"h4_mph4_terrain_02_grass_1",
+														"h4_mph4_terrain_02_grass_2",
+														"h4_mph4_terrain_02_grass_3",
+														"h4_mph4_terrain_04_grass_0",
+														"h4_mph4_terrain_04_grass_1",
+														"h4_mph4_terrain_05_grass_0",
+														"h4_mph4_terrain_06_grass_0"};
+	std::vector<std::string> cayoOccl = { "h4_mph4_terrain_occ_00",
+											"h4_mph4_terrain_occ_01",
+											"h4_mph4_terrain_occ_02",
+											"h4_mph4_terrain_occ_03",
+											"h4_mph4_terrain_occ_04",
+											"h4_mph4_terrain_occ_05",
+											"h4_mph4_terrain_occ_06",
+											"h4_mph4_terrain_occ_07",
+											"h4_mph4_terrain_occ_08",
+											"h4_mph4_terrain_occ_09" };
 	std::vector<std::string> modIpls;
 	std::vector<bool> santosIplState;
 	std::vector<bool> santosSpIplState;
@@ -310,6 +330,27 @@ namespace levelSwitch
 		{
 			AUDIO::LOCK_RADIO_STATION((char*)santosRadio[i].c_str(), false);
 		}
+
+		for (int i = 0; i < cayoInteriors.size(); i++)
+		{
+			STREAMING::REMOVE_IPL(const_cast<char*>(cayoInteriors[i].c_str()));
+		}
+
+		for (int i = 0; i < cayoInstancePlacement.size(); i++)
+		{
+			STREAMING::REMOVE_IPL(const_cast<char*>(cayoInstancePlacement[i].c_str()));
+		}
+		
+		for (int i = 0; i < cayoOccl.size(); i++)
+		{
+			STREAMING::REMOVE_IPL(const_cast<char*>(cayoOccl[i].c_str()));
+		}
+
+		for (int i = 0; i < cayoZones.size(); i++)
+		{
+			int zoneId = ZONE::GET_ZONE_FROM_NAME_ID((char*)cayoZones[i].c_str());
+			ZONE::SET_ZONE_ENABLED(zoneId, false);
+		}
 	}
 
 	void CreateBlips()
@@ -479,10 +520,10 @@ namespace levelSwitch
 		NETWORK::NETWORK_OVERRIDE_CLOCK_TIME(hours, minutes, seconds);
 	}
 
-	// Fix for Cayo Perico Heist Interiors in MP
-	void CayoPericoHeistInteriorFix()
+	// Fix for Cayo Perico Island Hopper not functioning correctly.
+	void CayoPericoIslandHopperHelper()
 	{
-		if (worldtravel::IsLosSantos())
+		if (!worldtravel::IsCayoPerico())
 		{
 			if (!hasCayoLoadedExternally && STREAMING::IS_IPL_ACTIVE("h4_islandairstrip_slod"))
 			{
@@ -491,6 +532,20 @@ namespace levelSwitch
 					if (!STREAMING::IS_IPL_ACTIVE(const_cast<char*>(cayoInteriors[i].c_str())))
 					{
 						STREAMING::REQUEST_IPL(const_cast<char*>(cayoInteriors[i].c_str()));
+					}
+				}
+				for (int i = 0; i < cayoInstancePlacement.size(); i++)
+				{
+					if (!STREAMING::IS_IPL_ACTIVE(const_cast<char*>(cayoInstancePlacement[i].c_str())))
+					{
+						STREAMING::REQUEST_IPL(const_cast<char*>(cayoInstancePlacement[i].c_str()));
+					}
+				}
+				for (int i = 0; i < cayoOccl.size(); i++)
+				{
+					if (!STREAMING::IS_IPL_ACTIVE(const_cast<char*>(cayoOccl[i].c_str())))
+					{
+						STREAMING::REQUEST_IPL(const_cast<char*>(cayoOccl[i].c_str()));
 					}
 				}
 				hasCayoLoadedExternally = true;
@@ -502,6 +557,20 @@ namespace levelSwitch
 					if (STREAMING::IS_IPL_ACTIVE(const_cast<char*>(cayoInteriors[i].c_str())))
 					{
 						STREAMING::REMOVE_IPL(const_cast<char*>(cayoInteriors[i].c_str()));
+					}
+				}
+				for (int i = 0; i < cayoInstancePlacement.size(); i++)
+				{
+					if (STREAMING::IS_IPL_ACTIVE(const_cast<char*>(cayoInstancePlacement[i].c_str())))
+					{
+						STREAMING::REMOVE_IPL(const_cast<char*>(cayoInstancePlacement[i].c_str()));
+					}
+				}
+				for (int i = 0; i < cayoOccl.size(); i++)
+				{
+					if (STREAMING::IS_IPL_ACTIVE(const_cast<char*>(cayoOccl[i].c_str())))
+					{
+						STREAMING::REMOVE_IPL(const_cast<char*>(cayoOccl[i].c_str()));
 					}
 				}
 				hasCayoLoadedExternally = false;
@@ -1020,7 +1089,7 @@ namespace levelSwitch
 	// Load Liberty City
 	void loadLiberty()
 	{
-		STREAMING::SET_ISLAND_ENABLED(const_cast<char*>("LibertyCity"), true);
+		//STREAMING::SET_ISLAND_ENABLED(const_cast<char*>("LibertyCity"), true);
 		requestIpls(libertyIpls);
 		// Request MP or SP IPLs based on session status
 		if (worldtravel::MpMap::IsMPMapActive())
@@ -1125,6 +1194,10 @@ namespace levelSwitch
 		{
 			GAMEPLAY::SET_WEATHER_TYPE_PERSIST(const_cast<char*>(yanktonWeatherTypes[weatherID].c_str()));
 		}
+		PATHFIND::SET_ROADS_IN_ANGLED_AREA(5526.24f, -5137.23f, 61.78925f, 3679.327f, -4973.879f, 125.0828f, 192, false, true, true);
+		PATHFIND::SET_ROADS_IN_ANGLED_AREA(3691.211f, -4941.24f, 94.59368f, 3511.115f, -4869.191f, 126.7621f, 16, false, true, true);
+		PATHFIND::SET_ROADS_IN_ANGLED_AREA(3510.004f, -4865.81f, 94.69557f, 3204.424f, -4833.817f, 126.8152f, 16, false, true, true);
+		PATHFIND::SET_ROADS_IN_ANGLED_AREA(3186.534f, -4832.798f, 109.8148f, 3202.187f, -4833.993f, 114.815f, 16, false, true, true);
 		GAMEPLAY::SET_OVERRIDE_WEATHER(const_cast<char*>(yanktonWeatherTypes[weatherID].c_str()));
 		worldtravel::PathNodeState::SetPathNodeState(1);
 		SetBlipsLocation(2);
@@ -1290,7 +1363,7 @@ namespace levelSwitch
 	// Unload Liberty City
 	void unloadLiberty()
 	{
-		STREAMING::SET_ISLAND_ENABLED(const_cast<char*>("LibertyCity"), false);
+		//STREAMING::SET_ISLAND_ENABLED(const_cast<char*>("LibertyCity"), false);
 		WAIT(1000);
 
 		removeIpls(libertyIpls);
@@ -1299,6 +1372,12 @@ namespace levelSwitch
 			removeIpls(libertyMpIpls);
 		else
 			removeIpls(libertySpIpls);
+
+
+		if (Settings::EnableLibertyCityLODLights)
+		{
+			removeIpls(libertyLODLightIpls);
+		}
 
 		unloadMapLiberty(libertyScenarios, libertyZones, libertyAmbientZones, libertyPeds, libertyVehicles, libertyRadio, { 12, 13, 14, 16, 17, 18 });
 	}
@@ -1316,11 +1395,6 @@ namespace levelSwitch
 			removeIpls(santosSpIpls, santosSpIplState);
 
 		unloadMapSantos(santosScenarios, santosZones, santosAmbientZones, santosPeds, santosVehicles, santosRadio, { 0, 3 }, santosScenariosState, santosAmbientZonesState);
-
-		if (Settings::EnableLibertyCityLODLights)
-		{
-			removeIpls(libertyLODLightIpls);
-		}
 
 		// if in singleplayer
 		if (!NETWORK::NETWORK_IS_IN_SESSION())
@@ -1352,6 +1426,10 @@ namespace levelSwitch
 		disableZones(yanktonZones);
 		disableAmbientZones(yanktonAmbientZones);
 		UI::SET_MINIMAP_IN_PROLOGUE(false);
+		PATHFIND::SET_ROADS_IN_ANGLED_AREA(5526.24f, -5137.23f, 61.78925f, 3679.327f, -4973.879f, 125.0828f, 192, false, false, true);
+		PATHFIND::SET_ROADS_IN_ANGLED_AREA(3691.211f, -4941.24f, 94.59368f, 3511.115f, -4869.191f, 126.7621f, 16, false, false, true);
+		PATHFIND::SET_ROADS_IN_ANGLED_AREA(3510.004f, -4865.81f, 94.69557f, 3204.424f, -4833.817f, 126.8152f, 16, false, false, true);
+		PATHFIND::SET_ROADS_IN_ANGLED_AREA(3186.534f, -4832.798f, 109.8148f, 3202.187f, -4833.993f, 114.815f, 16, false, false, true);
 		int weatherID = std::rand() % yanktonWeatherTypes.size();
 		// if in multiplayer
 		if (NETWORK::NETWORK_IS_IN_SESSION())
@@ -2316,57 +2394,31 @@ namespace levelSwitch
 		}
 	}
 
-	// handle map swapping when switching between characters
-	void CharacterSwitchLoadLC()
-	{
-		int currentLocation = worldtravel::GetPlayerLocationID();
-		if (currentLocation != 1)
-		{
-			if (STREAMING::IS_PLAYER_SWITCH_IN_PROGRESS())
-			{
-				if (STREAMING::GET_PLAYER_SWITCH_TYPE() == 1)
-				{
-					if (!NETWORK::NETWORK_IS_IN_SESSION())
-					{
-						if (STREAMING::GET_PLAYER_SWITCH_STATE() > 4)
-						{
-							SwitchMap(currentLocation, 1);
-							while (STREAMING::IS_PLAYER_SWITCH_IN_PROGRESS())
-							{
-								WAIT(0);
-							}
-						}
-					}
-					else
-					{
-						if (STREAMING::GET_PLAYER_SWITCH_STATE() > 2)
-						{
-							SwitchMap(currentLocation, 1);
-							while (STREAMING::IS_PLAYER_SWITCH_IN_PROGRESS())
-							{
-								WAIT(0);
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-
 	void RunTick()
 	{
-		CayoPericoHeistInteriorFix();
+		CayoPericoIslandHopperHelper();
 		worldtravel::MpMap::CheckIfMPMapIsActive();
 		AirportTravel();
 		DocksTravel();
 		TeleportBetweenMaps();
 		FlightController();
 		CharacterSwitchLoadLS();
-		CharacterSwitchLoadLC();
 		BlipVisibilityController();
 		NpcSpawnBlocker();
 		KeepLosSantosIplsDisabled();
 		CreateBlips();
+		static bool hasRunOnStartup = false; // Static variable to ensure this runs only once
+		if (Settings::EnableLCOnStartup && !hasRunOnStartup)
+		{
+			hasRunOnStartup = true;
+			if (worldtravel::IsLosSantos())
+			{
+				SwitchMap(0, 1);
+				playerPed = PLAYER::PLAYER_PED_ID();
+				bPlayerExists = ENTITY::DOES_ENTITY_EXIST(playerPed);
+				ENTITY::SET_ENTITY_COORDS(playerPed, 5022.0f, -2644.89f, 15.55f, 1, 0, 0, 1);
+			}
+		}
 	}
 
 
