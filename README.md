@@ -9,7 +9,10 @@ Code specific to liberty city, world travelling and scripts.
 WorldTravelPatches:
 Fixes issues with the game with memory patches so the mod will work correctly.
 
-#Example of use in WorldTravel.ini file the english config:
+# To use multilingualism add these settings to the end of your WorldTravel.ini
+
+English config:
+
 ```markdown
 [Languages]
 Lng1=Press ~INPUT_CONTEXT~ to enter the garage.
@@ -54,7 +57,7 @@ Lng39=You cannot ship this vehicle while wanted by the cops!
 Lng40=Press ~INPUT_CONTEXT~ to ship this vehicle to Los Santos for $3500.
 ```
 
-#Example of use in WorldTravel.ini file the russian config:
+Russian config:
 ```markdown
 [Languages]
 Lng1=Нажмите ~INPUT_CONTEXT~, чтобы войти в гараж.
