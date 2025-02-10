@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.35027.167
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WorldTravel", "WorldTravel\src\WorldTravel.vcxproj", "{B57A545A-0546-4510-A46D-CD13391AAF33}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WorldTravelPatches", "WorldTravelPatches\src\WorldTravelPatches.vcxproj", "{D8881CF4-E3E0-43C0-AC1E-19B428167249}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B57A545A-0546-4510-A46D-CD13391AAF33}.Debug|x64.ActiveCfg = Debug|x64
+		{B57A545A-0546-4510-A46D-CD13391AAF33}.Debug|x64.Build.0 = Debug|x64
+		{B57A545A-0546-4510-A46D-CD13391AAF33}.Release|x64.ActiveCfg = Release|x64
+		{B57A545A-0546-4510-A46D-CD13391AAF33}.Release|x64.Build.0 = Release|x64
+		{D8881CF4-E3E0-43C0-AC1E-19B428167249}.Debug|x64.ActiveCfg = Debug|x64
+		{D8881CF4-E3E0-43C0-AC1E-19B428167249}.Debug|x64.Build.0 = Debug|x64
+		{D8881CF4-E3E0-43C0-AC1E-19B428167249}.Release|x64.ActiveCfg = Release|x64
+		{D8881CF4-E3E0-43C0-AC1E-19B428167249}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6C9D95B0-2901-40B0-A836-257756C2C4C9}
+	EndGlobalSection
+EndGlobal
