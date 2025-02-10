@@ -28,14 +28,6 @@
 #ifndef FMT_FORMAT_H_
 #define FMT_FORMAT_H_
 
-// Disable checked iterator warnings
-#ifdef _MSC_VER
-#pragma warning(push)
-#pragma warning(disable: 4996) // Disable all deprecation warnings
-#define _SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING
-#define _SILENCE_ALL_MS_EXT_DEPRECATION_WARNINGS
-#endif
-
 #include <algorithm>
 #include <cassert>
 #include <cmath>
@@ -3558,10 +3550,6 @@ FMT_END_NAMESPACE
 // Restore warnings.
 #if FMT_GCC_VERSION >= 406 || FMT_CLANG_VERSION
 # pragma GCC diagnostic pop
-#endif
-
-#ifdef _MSC_VER
-#pragma warning(pop) // Restore warnings
 #endif
 
 #endif  // FMT_FORMAT_H_
